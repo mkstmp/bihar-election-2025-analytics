@@ -1,0 +1,603 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Bihar 2025 Election HQ</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root { --color-primary: #2563eb; --color-bg: #f3f4f6; --color-surface: #ffffff; --color-text-main: #111827; --color-text-muted: #6b7280; --color-border: #e5e7eb; --color-nda: #f97316; --color-mgb: #16a34a; --color-other: #64748b; --radius-lg: 16px; --radius-md: 12px; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Inter', sans-serif; background-color: var(--color-bg); color: var(--color-text-main); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+    .app-container { display: grid; grid-template-columns: 1fr 400px; height: 100%; max-width: 1600px; margin: 0 auto; width: 100%; }
+    @media (max-width: 1024px) { .app-container { grid-template-columns: 1fr; overflow-y: auto; } body { overflow: auto; } }
+    header { background: var(--color-surface); border-bottom: 1px solid var(--color-border); padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; z-index: 10; }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .brand-logo { width: 32px; height: 32px; background: var(--color-primary); color: white; border-radius: 8px; display: grid; place-items: center; font-weight: 700; }
+    .brand h1 { font-size: 18px; font-weight: 600; margin: 0; }
+    .dashboard { padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 24px; background: #f9fafb; }
+    
+    /* Navigation */
+    .nav-tabs { display: flex; gap: 24px; border-bottom: 1px solid var(--color-border); margin-bottom: 10px; padding-bottom: 0; }
+    .nav-tab { padding: 10px 0; font-size: 14px; font-weight: 500; color: var(--color-text-muted); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; }
+    .nav-tab:hover { color: var(--color-text-main); }
+    .nav-tab.active { color: var(--color-primary); border-bottom-color: var(--color-primary); font-weight: 600; }
+    .section { display: none; animation: fadeIn 0.3s ease; }
+    .section.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Cards */
+    .card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: 20px; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); }
+    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .card-title { font-size: 15px; font-weight: 600; color: var(--color-text-main); display: flex; gap: 8px; }
+    .table-wrapper { overflow-x: auto; border: 1px solid var(--color-border); border-radius: var(--radius-md); }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th { background: #f9fafb; text-align: left; padding: 10px 12px; font-weight: 600; color: var(--color-text-muted); border-bottom: 1px solid var(--color-border); cursor: pointer; user-select: none; }
+    th:hover { background: #eef2ff; color: var(--color-primary); }
+    td { padding: 10px 12px; border-bottom: 1px solid var(--color-border); color: var(--color-text-main); }
+    tr:last-child td { border-bottom: none; }
+    
+    /* Components */
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 99px; font-size: 11px; font-weight: 600; }
+    .badge-nda { background: #ffedd5; color: #9a3412; }
+    .badge-mgb { background: #dcfce7; color: #166534; }
+    .badge-oth { background: #f1f5f9; color: #475569; }
+    .bento-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+    
+    /* Overview */
+    .majority-container { background: var(--color-surface); padding: 20px; border-radius: var(--radius-lg); border: 1px solid var(--color-border); }
+    .majority-header { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; font-weight: 500; color: var(--color-text-muted); }
+    .majority-track { height: 24px; background: #f1f5f9; border-radius: 12px; position: relative; overflow: hidden; display: flex; }
+    .bar-nda { background: var(--color-nda); height: 100%; transition: width 1s ease; }
+    .bar-mgb { background: var(--color-mgb); height: 100%; transition: width 1s ease; }
+    .bar-oth { background: var(--color-other); height: 100%; transition: width 1s ease; }
+    .breakdown-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    @media (max-width: 768px) { .breakdown-grid { grid-template-columns: 1fr; } }
+    .alliance-card { background: var(--color-surface); border-radius: var(--radius-lg); border: 1px solid var(--color-border); overflow: hidden; display: flex; flex-direction: column; }
+    .alliance-header { padding: 12px 16px; font-weight: 600; font-size: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); }
+    .alliance-list { padding: 0; margin: 0; list-style: none; max-height: 300px; overflow-y: auto; min-height: 120px; }
+    .party-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid #e5e7eb; font-size: 13px; }
+    .header-nda { background: #fff7ed; color: #9a3412; border-bottom-color: #ffedd5; }
+    .header-mgb { background: #f0fdf4; color: #166534; border-bottom-color: #dcfce7; }
+    .header-oth { background: #f8fafc; color: #475569; border-bottom-color: #e2e8f0; }
+
+    /* Head to Head */
+    .h2h-controls { display: flex; gap: 12px; align-items: center; background: #fff; padding: 16px; border-radius: var(--radius-lg); border: 1px solid var(--color-border); margin-bottom: 20px; }
+    .select-box { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #ccc; font-size: 14px; }
+    .scoreboard { display: grid; grid-template-columns: 1fr 140px 1fr; gap: 0; background: #fff; border-radius: var(--radius-lg); border: 1px solid var(--color-border); overflow: hidden; margin-bottom: 24px; }
+    .score-panel { padding: 20px; display: flex; flex-direction: column; }
+    .score-panel.left { background: #eff6ff; color: var(--color-primary); text-align: left; }
+    .score-panel.right { background: #fff7ed; color: var(--color-nda); text-align: right; }
+    .score-mid { display: flex; flex-direction: column; justify-content: center; align-items: center; background: #fff; border-left: 1px solid #eee; border-right: 1px solid #eee; text-align: center; z-index: 2; }
+    .score-big { font-size: 42px; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+    .score-stats { display: flex; flex-direction: column; gap: 6px; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 12px; }
+    .stat-row-mini { display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 500; color: #4b5563; }
+    .score-panel.right .score-stats { align-items: flex-end; }
+    .score-panel.right .stat-row-mini { width: 100%; flex-direction: row-reverse; }
+    .winner-dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+    .dot-green { background: #16a34a; }
+
+    /* Analytics Grid - Fixed Separator */
+    .analytics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin-top: 12px; }
+    .analytics-grid > div:first-child { border-right: 1px solid var(--color-border); padding-right: 24px; }
+    .analytics-grid > div:last-child { padding-left: 24px; }
+    .stat-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #e5e7eb; font-size: 13px; }
+    .stat-val { font-weight: 600; }
+    .section-title { font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; color: var(--color-primary); margin-bottom: 8px; }
+
+    /* Right Panel */
+    .ai-panel { background: var(--color-surface); border-left: 1px solid var(--color-border); display: flex; flex-direction: column; height: 100%; }
+    .ai-header { padding: 20px; border-bottom: 1px solid var(--color-border); background: #fafafa; }
+    .ai-header h2 { margin: 0; font-size: 16px; display: flex; align-items: center; gap: 8px; }
+    .prompt-area { flex: 1; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; }
+    .input-container { display: flex; flex-direction: column; gap: 10px; background: #fff; padding: 12px; border-radius: 12px; border: 1px solid var(--color-border); box-shadow: 0 2px 4px rgba(0,0,0,0.03); }
+    textarea { width: 100%; border: none; background: transparent; resize: none; height: 80px; padding: 4px; outline: none; font-size: 14px; font-family: 'Inter'; }
+    .send-btn { background: var(--color-primary); color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 500; align-self: flex-end; display: flex; align-items: center; gap: 6px; transition: background 0.2s; }
+    .send-btn:hover { background: #1d4ed8; }
+    .recent-questions { margin-top: 20px; }
+    .recent-title { font-size: 12px; font-weight: 600; color: var(--color-text-muted); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .q-chip { display: block; padding: 10px; background: #f3f4f6; border-radius: 8px; margin-bottom: 8px; font-size: 13px; color: #374151; cursor: pointer; transition: background 0.2s; }
+    .q-chip:hover { background: #e5e7eb; }
+
+    /* Chat */
+    .main-chat-container { display: flex; flex-direction: column; gap: 24px; max-width: 900px; margin: 0 auto; }
+    .chat-block { background: #fff; border-radius: 12px; border: 1px solid var(--color-border); overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+    .chat-q { background: #f8fafc; padding: 16px 20px; border-bottom: 1px solid #e5e7eb; font-weight: 600; color: #1e293b; display: flex; gap: 12px; align-items: center; }
+    .chat-q i { color: var(--color-primary); }
+    .chat-a { padding: 24px; font-size: 15px; line-height: 1.6; color: #334155; }
+    .chat-table-container { margin-top: 16px; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; }
+    .chat-table-container table th { background: #f1f5f9; }
+    .empty-state { text-align: center; padding: 60px 20px; color: #9ca3af; }
+    .empty-state i { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
+    .empty-list-msg { padding: 20px; text-align: center; font-size: 12px; color: #9ca3af; }
+  </style>
+</head>
+<body>
+
+<div class="app-container">
+  
+  <main class="dashboard">
+    <header>
+      <div class="brand">
+        <div class="brand-logo">BH</div>
+        <div><h1>Bihar Election 2025</h1><div style="font-size: 12px; color: var(--color-text-muted);">Live Results Explorer</div></div>
+      </div>
+    </header>
+
+    <div class="nav-tabs">
+      <div class="nav-tab active" onclick="switchTab('overview')">Overview</div>
+      <div class="nav-tab" onclick="switchTab('head2head')">Head to Head</div>
+      <div class="nav-tab" onclick="switchTab('parties')">Parties</div>
+      <div class="nav-tab" onclick="switchTab('constituencies')">Constituencies</div>
+      <div class="nav-tab" onclick="switchTab('ai_analysis')"><i class="ph ph-sparkle" style="color:var(--color-primary)"></i> AI Analysis</div>
+    </div>
+
+    <div id="overview" class="section active">
+      <div class="majority-container">
+        <div class="majority-header"><span>NDA</span><span>Majority Mark (122)</span><span>MGB</span></div>
+        <div style="position:relative; height: 30px; margin-bottom: 8px;">
+           <div class="majority-track" id="majority-bar">
+             <div style="width:0%" class="bar-nda"></div><div style="width:0%" class="bar-mgb"></div><div style="width:0%" class="bar-oth"></div>
+           </div>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 600;">
+           <span id="seats-nda" style="color: var(--color-nda)">NDA: 0</span><span id="seats-mgb" style="color: var(--color-mgb)">MGB: 0</span>
+        </div>
+      </div>
+      
+      <h3 style="font-size:14px; color:var(--color-text-muted); margin: 24px 0 12px;">Alliance Breakdown</h3>
+      <div class="breakdown-grid">
+        <div class="alliance-card"><div class="alliance-header header-nda"><span>NDA</span><span id="total-nda-seats">0</span></div><ul class="alliance-list" id="list-nda"></ul></div>
+        <div class="alliance-card"><div class="alliance-header header-mgb"><span>MGB</span><span id="total-mgb-seats">0</span></div><ul class="alliance-list" id="list-mgb"></ul></div>
+        <div class="alliance-card"><div class="alliance-header header-oth"><span>Others</span><span id="total-oth-seats">0</span></div><ul class="alliance-list" id="list-oth"></ul></div>
+      </div>
+
+      <div class="analytics-grid" style="margin-top: 24px;">
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="ph ph-fire"></i> Nail Biters (< 2%)</div></div>
+          <div class="table-wrapper"><table id="table-nailbiters"><thead><tr><th>AC</th><th>Winner</th><th>Runner Up</th><th>Margin</th></tr></thead><tbody></tbody></table></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="ph ph-chart-bar"></i> Party Deep Dive</div><select id="analytics-party-select" onchange="loadPartyAnalytics(this.value, true)" style="padding: 4px 8px; border-radius: 6px; border: 1px solid #ccc;"></select></div>
+          <div class="analytics-grid" style="margin-top:0; gap:0;">
+            <div>
+              <div class="section-title">Positions</div>
+              <div class="stat-row"><span>Winner (1st)</span><span id="an-pos-1" class="stat-val">-</span></div>
+              <div class="stat-row"><span>Runner-up (2nd)</span><span id="an-pos-2" class="stat-val">-</span></div>
+              <div class="stat-row"><span>3rd Place</span><span id="an-pos-3" class="stat-val">-</span></div>
+              <div class="stat-row"><span>4th+</span><span id="an-pos-4" class="stat-val">-</span></div>
+              <div class="stat-row"><span>5th+</span><span id="an-pos-5" class="stat-val">-</span></div>
+              <div class="stat-row" style="border-top:1px solid #eee; margin-top:8px; padding-top:8px;"><span>Total Contested</span><span id="an-total" class="stat-val">-</span></div>
+            </div>
+            <div>
+              <div class="section-title">Vote Share</div>
+              <div class="stat-row"><span>> 50%</span><span id="an-vote-50" class="stat-val">-</span></div>
+              <div class="stat-row"><span>40% – 50%</span><span id="an-vote-40" class="stat-val">-</span></div>
+              <div class="stat-row"><span>25% – 40%</span><span id="an-vote-25" class="stat-val">-</span></div>
+              <div class="stat-row"><span>10% – 25%</span><span id="an-vote-10" class="stat-val">-</span></div>
+              <div class="stat-row"><span>< 10%</span><span id="an-vote-low" class="stat-val">-</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="head2head" class="section">
+      <div class="h2h-controls">
+        <select id="h2h-p1" class="select-box" onchange="onH2HP1Change()"></select>
+        <div class="vs-badge">VS</div>
+        <select id="h2h-p2" class="select-box" onchange="loadHeadToHead(true)"></select>
+      </div>
+      <div id="h2h-content" style="display:none">
+        <div class="scoreboard">
+          <div class="score-panel left">
+            <div class="score-big" id="h2h-s1-seats">0</div><div class="score-label">Seats Won</div>
+            <div class="score-stats">
+              <div class="stat-row-mini"><span>Total Votes</span> <strong id="h2h-s1-votes">-</strong></div>
+              <div class="stat-row-mini"><span>Avg Vote %</span> <strong id="h2h-s1-avg-pct">-</strong></div>
+              <div class="stat-row-mini"><span>Avg Vote/AC</span> <strong id="h2h-s1-avg-raw">-</strong></div>
+              <div class="stat-row-mini"><span>Strike Rate</span> <strong id="h2h-s1-strike">-</strong></div>
+            </div>
+          </div>
+          <div class="score-mid">
+            <div style="font-size: 12px; color: #666; margin-bottom: 4px;">CONTESTED</div>
+            <div style="font-size: 28px; font-weight: 800;" id="h2h-total-contests">0</div>
+            <div style="font-size: 10px; color: #999;">TOGETHER</div>
+          </div>
+          <div class="score-panel right">
+             <div class="score-big" id="h2h-s2-seats">0</div><div class="score-label">Seats Won</div>
+             <div class="score-stats">
+              <div class="stat-row-mini"><span>Total Votes</span> <strong id="h2h-s2-votes">-</strong></div>
+              <div class="stat-row-mini"><span>Avg Vote %</span> <strong id="h2h-s2-avg-pct">-</strong></div>
+              <div class="stat-row-mini"><span>Avg Vote/AC</span> <strong id="h2h-s2-avg-raw">-</strong></div>
+              <div class="stat-row-mini"><span>Strike Rate</span> <strong id="h2h-s2-strike">-</strong></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Direct Contest Details</div></div>
+          <div class="table-wrapper"><table id="table-h2h"><thead><tr><th>AC</th><th id="th-p1">Party A</th><th id="th-p2">Party B</th><th>Outcome</th><th>Margin</th></tr></thead><tbody></tbody></table></div>
+        </div>
+      </div>
+      <div id="h2h-empty" style="text-align:center; padding: 40px; color:#666;">Select parties to compare.</div>
+    </div>
+
+    <div id="parties" class="section">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Party Performance Matrix</div>
+          <select id="party-perf-filter" onchange="loadPartyPerformance()" style="padding: 4px 8px; border-radius: 6px; border: 1px solid #ccc;">
+             <option value="1s">Min 1 Seat</option>
+             <option value="1p" selected>Min 1% Vote</option>
+             <option value="0">All Parties</option>
+          </select>
+        </div>
+        <div class="table-wrapper">
+          <table id="table-party-perf">
+            <thead>
+              <tr>
+                <th onclick="sortPartyPerf('party_short')">Party</th>
+                <th onclick="sortPartyPerf('alliance')">Alliance</th>
+                <th onclick="sortPartyPerf('seats_contested')">Contested</th>
+                <th onclick="sortPartyPerf('seats_won')">Won</th>
+                <th onclick="sortPartyPerf('strike_rate')">Strike Rate</th>
+                <th onclick="sortPartyPerf('avg_votes_per_seat')">Avg Votes/Seat</th>
+                <th onclick="sortPartyPerf('vote_pct_contested')">Vote % (Contested)</th>
+                <th onclick="sortPartyPerf('state_vote_share')">Vote % (State)</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="constituencies" class="section">
+      <div class="card">
+        <div class="card-header"><div class="card-title">Find Constituency</div></div>
+        <input type="text" id="const-search" placeholder="Type name or number..." style="width: 100%; padding: 12px; border: 1px solid var(--color-border); border-radius: 8px; outline: none;">
+        <div id="const-results" style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px;"></div>
+      </div>
+      <div class="card" id="const-detail-card" style="display:none; margin-top: 16px;">
+        <div class="card-header"><div class="card-title" id="const-detail-title"></div></div>
+        <div class="table-wrapper"><table id="table-const-candidates"><thead><tr><th>#</th><th>Candidate</th><th>Party</th><th>Votes</th><th>%</th></tr></thead><tbody></tbody></table></div>
+      </div>
+    </div>
+
+    <div id="ai_analysis" class="section">
+      <div class="main-chat-container" id="main-chat-container">
+        <div class="empty-state">
+          <i class="ph ph-chats-circle"></i>
+          <h3>Ask Election Analyst AI</h3>
+          <p>Use the panel on the right to ask complex questions about the election data.</p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <aside class="ai-panel">
+    <div class="ai-header"><h2><i class="ph ph-sparkle" style="color: var(--color-primary)"></i> Ask AI</h2></div>
+    <div class="prompt-area">
+      <div class="recent-questions">
+        <div class="recent-title">Quick Queries</div>
+        <div class="q-chip" onclick="fillAndAsk('How did BJP perform vs RJD?')">BJP vs RJD Performance</div>
+        <div class="q-chip" onclick="fillAndAsk('Show me seats where NOTA votes > winning margin')">NOTA > Margin</div>
+        <div class="q-chip" onclick="fillAndAsk('List top 5 candidates with highest winning margin')">Highest Margins</div>
+        <div class="q-chip" onclick="fillAndAsk('Which party has best strike rate?')">Best Strike Rate</div>
+      </div>
+      <div class="input-container"><textarea id="chat-input" placeholder="Type your question here..."></textarea><button class="send-btn" onclick="askLLM()">Analyze <i class="ph ph-arrow-right"></i></button></div>
+    </div>
+  </aside>
+</div>
+
+<script>
+  const API_BASE = "";
+  let allParties = [];
+  let currentAc = null;
+  let partyPerfData = [];
+  let sortCol = 'seats_won';
+  let sortAsc = false;
+
+  document.addEventListener("DOMContentLoaded", async () => {
+    try {
+      const res = await fetch(`${API_BASE}/overview/parties`);
+      allParties = await res.json();
+      await populateStaticDropdowns();
+      await restoreStateFromURL();
+      loadOverview();
+      loadPartyPerformance();
+      setupConstituencySearch();
+    } catch(e) { console.error(e); }
+  });
+
+  // --- URL & NAVIGATION ---
+  function updateURL() {
+    const params = new URLSearchParams();
+    params.set('tab', document.querySelector('.section.active').id);
+    if (document.getElementById('h2h-p1').value) params.set('p1', document.getElementById('h2h-p1').value);
+    if (document.getElementById('h2h-p2').value) params.set('p2', document.getElementById('h2h-p2').value);
+    if (document.getElementById('analytics-party-select').value) params.set('analytics', document.getElementById('analytics-party-select').value);
+    if (currentAc) params.set('ac', currentAc);
+    window.history.replaceState({}, '', `?${params.toString()}`);
+  }
+
+  async function restoreStateFromURL() {
+    const params = new URLSearchParams(window.location.search);
+    const tab = params.get('tab') || 'overview';
+    switchTab(tab, false); 
+
+    const analyticsP = params.get('analytics');
+    if (analyticsP) {
+      document.getElementById('analytics-party-select').value = analyticsP;
+      loadPartyAnalytics(analyticsP, false);
+    } else if (allParties.length > 0) {
+       loadPartyAnalytics(allParties[0].party_short, false);
+    }
+
+    let p1 = params.get('p1'); let p2 = params.get('p2');
+    
+    // Default Logic
+    if(!p1 && !p2) { 
+       p1 = 'BJP'; 
+       p2 = 'RJD'; 
+    }
+    
+    if(p1) {
+      const p1Sel = document.getElementById('h2h-p1');
+      if (!p1Sel.querySelector(`option[value="${p1}"]`) && p1Sel.options.length > 0) {
+          p1 = p1Sel.options[0].value;
+      }
+      p1Sel.value = p1;
+      
+      // Wait for P2 dropdown
+      await onH2HP1Change(false); 
+      
+      if(p2) {
+         const p2Sel = document.getElementById('h2h-p2');
+         if(p2Sel.querySelector(`option[value="${p2}"]`)) p2Sel.value = p2;
+         // Fallback: If RJD isn't in the opponents list for some reason, default to first available
+         else if(p2Sel.options.length > 0) p2Sel.selectedIndex = 0;
+      }
+      loadHeadToHead(false);
+    }
+
+    const ac = params.get('ac');
+    if(ac) { currentAc = ac; loadConstDetail(ac, false); }
+  }
+
+  function switchTab(id, update=true) {
+    document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+    document.querySelector(`.nav-tab[onclick="switchTab('${id}')"]`).classList.add('active');
+    document.getElementById(id).classList.add('active');
+    if(update) updateURL();
+  }
+
+  function formatNum(n) { return n ? n.toLocaleString() : "0"; }
+  function formatPct(n) { return n ? n.toFixed(1) + "%" : "0%"; }
+  function formatKs(n) { return n ? (n/1000).toFixed(1) + "k" : "0"; }
+  function getAllianceBadge(a) { if(a==="NDA") return "badge badge-nda"; if(a==="MGB") return "badge badge-mgb"; return "badge badge-oth"; }
+
+  // LOGIC
+  async function populateStaticDropdowns() {
+    try {
+      const res = await fetch(`${API_BASE}/analytics/relevant-parties`);
+      const relevant = await res.json();
+      const relOpts = relevant.map(p => `<option value="${p.party_short}">${p.party_short}</option>`).join('');
+      
+      document.getElementById('analytics-party-select').innerHTML = relOpts;
+      document.getElementById('h2h-p1').innerHTML = relOpts;
+    } catch(e) {}
+  }
+
+  async function loadPartyAnalytics(party, update=true) {
+    if(!party) return;
+    document.getElementById('analytics-party-select').value = party;
+    const res = await fetch(`${API_BASE}/party/analytics?party_short=${encodeURIComponent(party)}`);
+    const data = await res.json();
+    
+    // Fallback to 0 if data is empty
+    const d = (data && data[0]) ? data[0] : {};
+    
+    document.getElementById('an-pos-1').textContent = d.pos_1 || 0;
+    document.getElementById('an-pos-2').textContent = d.pos_2 || 0;
+    document.getElementById('an-pos-3').textContent = d.pos_3 || 0;
+    document.getElementById('an-pos-4').textContent = d.pos_4 || 0;
+    document.getElementById('an-pos-5').textContent = d.pos_5_plus || 0;
+    document.getElementById('an-total').textContent = d.total_seats_contested || 0;
+    document.getElementById('an-vote-50').textContent = d.vote_gt_50 || 0;
+    document.getElementById('an-vote-40').textContent = d.vote_40_50 || 0;
+    document.getElementById('an-vote-25').textContent = d.vote_25_40 || 0;
+    document.getElementById('an-vote-10').textContent = d.vote_10_25 || 0;
+    document.getElementById('an-vote-low').textContent = d.vote_lt_10 || 0;
+    
+    if(update) updateURL();
+  }
+
+  async function onH2HP1Change(updateUrl=true) {
+    const p1 = document.getElementById('h2h-p1').value;
+    if(!p1) return;
+    const res = await fetch(`${API_BASE}/analytics/opponents?party=${encodeURIComponent(p1)}`);
+    const opponents = await res.json();
+    const p2Select = document.getElementById('h2h-p2');
+    if (opponents.length === 0) p2Select.innerHTML = '<option value="">No opponents found</option>';
+    else p2Select.innerHTML = opponents.map(o => `<option value="${o.party_short}">${o.party_short} (${o.contests})</option>`).join('');
+    
+    if(updateUrl && opponents.length > 0) {
+       p2Select.selectedIndex = 0;
+       loadHeadToHead(true);
+    }
+  }
+
+  async function loadHeadToHead(update=true) {
+    const p1 = document.getElementById('h2h-p1').value;
+    const p2 = document.getElementById('h2h-p2').value;
+    if(!p1 || !p2 || p1 === p2) {
+      document.getElementById('h2h-content').style.display = 'none';
+      document.getElementById('h2h-empty').style.display = 'block';
+      return;
+    }
+    if(update) updateURL();
+    document.getElementById('h2h-empty').style.display = 'none';
+    document.getElementById('h2h-content').style.display = 'block';
+    document.getElementById('th-p1').textContent = p1;
+    document.getElementById('th-p2').textContent = p2;
+
+    const res = await fetch(`${API_BASE}/analytics/head-to-head?party1=${encodeURIComponent(p1)}&party2=${encodeURIComponent(p2)}`);
+    const matches = await res.json();
+    let p1Wins=0, p2Wins=0, p1Votes=0, p2Votes=0, p1PctSum=0, p2PctSum=0;
+    let total = matches.length;
+    const rowsHtml = matches.map(m => {
+      if (m.actual_winner === p1) p1Wins++;
+      if (m.actual_winner === p2) p2Wins++;
+      p1Votes += (m.p1_votes || 0); p2Votes += (m.p2_votes || 0);
+      p1PctSum += (m.p1_pct || 0); p2PctSum += (m.p2_pct || 0);
+      const p1Class = m.actual_winner === p1 ? "font-weight:700; color:#166534" : "";
+      const p2Class = m.actual_winner === p2 ? "font-weight:700; color:#166534" : "";
+      let outcome = `<span style="color:#999">Won by ${m.actual_winner}</span>`;
+      if(m.actual_winner === p1) outcome = `<span class="badge badge-mgb">${p1} Won</span>`; 
+      if(m.actual_winner === p2) outcome = `<span class="badge badge-mgb">${p2} Won</span>`;
+      return `<tr><td>${m.ac_no} - ${m.ac_name}</td><td style="${p1Class}">${formatNum(m.p1_votes)} <small>(${formatPct(m.p1_pct)})</small> ${m.actual_winner === p1 ? '<span class="winner-dot dot-green"></span>' : ''}</td><td style="${p2Class}">${formatNum(m.p2_votes)} <small>(${formatPct(m.p2_pct)})</small> ${m.actual_winner === p2 ? '<span class="winner-dot dot-green"></span>' : ''}</td><td>${outcome}</td><td>${formatNum(Math.abs((m.p1_votes||0)-(m.p2_votes||0)))}</td></tr>`;
+    }).join('');
+
+    document.getElementById('h2h-s1-seats').textContent = p1Wins;
+    document.getElementById('h2h-s1-votes').textContent = formatNum(p1Votes);
+    document.getElementById('h2h-s1-avg-pct').textContent = total ? formatPct(p1PctSum/total) : "0%";
+    document.getElementById('h2h-s1-strike').textContent = total ? formatPct((p1Wins/total)*100) : "0%";
+    document.getElementById('h2h-s1-avg-raw').textContent = total ? formatKs(p1Votes/total) : "0";
+
+    document.getElementById('h2h-s2-seats').textContent = p2Wins;
+    document.getElementById('h2h-s2-votes').textContent = formatNum(p2Votes);
+    document.getElementById('h2h-s2-avg-pct').textContent = total ? formatPct(p2PctSum/total) : "0%";
+    document.getElementById('h2h-s2-strike').textContent = total ? formatPct((p2Wins/total)*100) : "0%";
+    document.getElementById('h2h-s2-avg-raw').textContent = total ? formatKs(p2Votes/total) : "0";
+    
+    document.getElementById('h2h-total-contests').textContent = total;
+    document.querySelector('#table-h2h tbody').innerHTML = rowsHtml;
+  }
+
+  async function loadOverview() {
+      const [alliances, parties, nailbiters] = await Promise.all([
+        fetch(`${API_BASE}/overview/alliances`).then(r=>r.json()),
+        fetch(`${API_BASE}/overview/parties`).then(r=>r.json()),
+        fetch(`${API_BASE}/overview/nail_biters?limit=10`).then(r=>r.json())
+      ]);
+      const totalSeats = 243;
+      const nda = alliances.find(d=>d.alliance==='NDA')?.seats_won||0;
+      const mgb = alliances.find(d=>d.alliance==='MGB')?.seats_won||0;
+      const oth = alliances.reduce((acc,c)=>(c.alliance!=='NDA'&&c.alliance!=='MGB')?acc+(c.seats_won||0):acc,0);
+      document.querySelector('.bar-nda').style.width=`${(nda/totalSeats)*100}%`;
+      document.querySelector('.bar-mgb').style.width=`${(mgb/totalSeats)*100}%`;
+      document.querySelector('.bar-oth').style.width=`${(oth/totalSeats)*100}%`;
+      document.getElementById('seats-nda').innerText = `NDA: ${nda}`;
+      document.getElementById('seats-mgb').innerText = `MGB: ${mgb}`;
+      let hNDA="", hMGB="", hOth="", sNDA=0, sMGB=0, sOth=0;
+      parties.forEach(p=>{
+        const row = `<li class="party-row"><span class="party-name">${p.party_short}</span><div class="party-stats"><div class="party-seats">${p.seats_won||0} seats</div><div class="party-votes">${formatPct(p.vote_share)}</div></div></li>`;
+        if(p.alliance==="NDA"){hNDA+=row;sNDA+=p.seats_won||0;}
+        else if(p.alliance==="MGB"){hMGB+=row;sMGB+=p.seats_won||0;}
+        else{hOth+=row;sOth+=p.seats_won||0;}
+      });
+      document.getElementById("list-nda").innerHTML=hNDA || '<div class="empty-list-msg">No parties</div>'; document.getElementById("total-nda-seats").innerText=sNDA;
+      document.getElementById("list-mgb").innerHTML=hMGB || '<div class="empty-list-msg">No parties</div>'; document.getElementById("total-mgb-seats").innerText=sMGB;
+      document.getElementById("list-oth").innerHTML=hOth || '<div class="empty-list-msg">No parties</div>'; document.getElementById("total-oth-seats").innerText=sOth;
+      document.querySelector('#table-nailbiters tbody').innerHTML = nailbiters.length ? nailbiters.map(r=>`<tr><td><span class="badge badge-oth">${r.ac_no}</span> ${r.ac_name}</td><td>${r.winner_party_short}</td><td style="color:#6b7280">${r.runner_party_short}</td><td><strong>${r.margin_votes}</strong> (${formatPct(r.margin_percent)})</td></tr>`).join('') : '<tr><td colspan="4" style="text-align:center;padding:10px;color:#999;">No close contests</td></tr>';
+  }
+
+  async function loadPartyPerformance() {
+    const min = document.getElementById('party-perf-filter').value;
+    let url = `${API_BASE}/overview/party_performance?`;
+    if (min === '1s') url += 'min_seats_won=1&min_vote_share=100.0';
+    else if (min === '1p') url += 'min_seats_won=1000&min_vote_share=1.0';
+    else url += 'min_seats_won=0&min_vote_share=0';
+    const res = await fetch(url);
+    partyPerfData = await res.json();
+    renderPartyPerfTable();
+  }
+
+  function sortPartyPerf(key) {
+    if (sortCol === key) sortAsc = !sortAsc;
+    else { sortCol = key; sortAsc = false; } 
+    renderPartyPerfTable();
+  }
+
+  function renderPartyPerfTable() {
+    partyPerfData.sort((a,b) => {
+      let valA = a[sortCol]; let valB = b[sortCol];
+      if(typeof valA === 'string') valA = valA.toLowerCase();
+      if(typeof valB === 'string') valB = valB.toLowerCase();
+      if(valA < valB) return sortAsc ? -1 : 1;
+      if(valA > valB) return sortAsc ? 1 : -1;
+      return 0;
+    });
+    const tbody = document.querySelector('#table-party-perf tbody');
+    tbody.innerHTML = partyPerfData.map(r => `<tr><td><strong>${r.party_short}</strong></td><td><span class="${getAllianceBadge(r.alliance)}">${r.alliance}</span></td><td>${r.seats_contested}</td><td>${r.seats_won}</td><td>${formatPct(r.strike_rate)}</td><td>${formatNum(Math.round(r.avg_votes_per_seat))}</td><td style="color:var(--color-primary);font-weight:500">${formatPct(r.vote_pct_contested)}</td><td>${formatPct(r.state_vote_share)}</td></tr>`).join('');
+    document.querySelectorAll('#table-party-perf th').forEach(th => {
+       if(th.innerText.includes('▼') || th.innerText.includes('▲')) th.innerText = th.innerText.slice(0, -2);
+       if(th.getAttribute('onclick').includes(sortCol)) th.innerText += sortAsc ? ' ▲' : ' ▼';
+    });
+  }
+
+  function setupConstituencySearch() {
+    const input = document.getElementById('const-search');
+    let timer;
+    input.addEventListener('keyup', () => {
+      clearTimeout(timer);
+      timer = setTimeout(async () => {
+        const q = input.value;
+        if(q.length<2) return;
+        const res = await fetch(`${API_BASE}/constituency/search?q=${q}`);
+        const data = await res.json();
+        document.getElementById('const-results').innerHTML = data.map(d=>`<div class="chip" style="background:#eef2ff; color:#2563eb; padding:6px 12px; border-radius:99px; cursor:pointer; font-size:12px;" onclick="loadConstDetail(${d.ac_no})">${d.ac_no} - ${d.ac_name}</div>`).join('');
+      }, 300);
+    });
+  }
+
+  async function loadConstDetail(acNo, update=true) {
+    const res = await fetch(`${API_BASE}/constituency/detail?ac_no=${acNo}`);
+    const data = await res.json();
+    if(!data.length) return;
+    const winner = data.find(d=>d.is_winner)||data[0];
+    document.getElementById('const-detail-card').style.display='flex';
+    document.getElementById('const-detail-title').innerHTML = `<div><div style="font-size:16px; font-weight:700;">AC ${winner.ac_no}: ${winner.ac_name}</div><div style="font-size:13px; color:#6b7280; font-weight:500; margin-top:4px;">Winner: ${winner.candidate} <span style="color:#2563eb;">(${winner.party_short})</span></div></div>`;
+    document.querySelector('#table-const-candidates tbody').innerHTML = data.map((d,i)=>`<tr style="${d.is_winner?'background:#f0fdf4':''}"><td>${i+1}</td><td>${d.candidate}</td><td>${d.party_short} <small>(${d.alliance})</small></td><td>${formatNum(d.total_votes)}</td><td>${formatPct(d.vote_percent)}</td></tr>`).join('');
+    currentAc = acNo;
+    if(update) updateURL();
+  }
+
+  function fillAndAsk(q) {
+    document.getElementById('chat-input').value = q;
+    askLLM();
+  }
+
+  async function askLLM() {
+    const input = document.getElementById('chat-input');
+    const question = input.value.trim();
+    if(!question) return;
+    switchTab('ai_analysis');
+    const container = document.getElementById('main-chat-container');
+    if(container.querySelector('.empty-state')) container.innerHTML = '';
+    const loadingId = 'loading-' + Date.now();
+    container.insertAdjacentHTML('afterbegin', `<div id="${loadingId}" class="chat-block"><div class="chat-q"><i class="ph ph-user-circle" style="font-size:20px"></i> ${question}</div><div class="chat-a" style="color:#6b7280"><i class="ph ph-spinner ph-spin"></i> Analyzing data...</div></div>`);
+    input.value = '';
+    try {
+      const res = await fetch(`${API_BASE}/ask`, { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({question}) });
+      const data = await res.json();
+      document.getElementById(loadingId).remove();
+      let rowsHtml = '';
+      if(data.rows && data.rows.length) {
+        const headers = Object.keys(data.rows[0]);
+        rowsHtml = `<div class="chat-table-container"><table><thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${data.rows.slice(0,5).map(r=>`<tr>${headers.map(h=>`<td>${r[h]}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+      }
+      container.insertAdjacentHTML('afterbegin', `<div class="chat-block"><div class="chat-q"><i class="ph ph-user-circle" style="font-size:20px"></i> ${question}</div><div class="chat-a">${data.answer.replace(/\n/g, '<br>')}${rowsHtml}<div style="margin-top:12px; font-size:11px; color:#94a3b8; cursor:pointer;" onclick="this.nextElementSibling.style.display='block'">Show SQL Query</div><div style="display:none; margin-top:6px; background:#1e293b; color:#cbd5e1; padding:10px; border-radius:6px; font-family:monospace; font-size:11px;">${data.sql}</div></div></div>`);
+    } catch(e) { document.getElementById(loadingId).innerHTML = `<div class="chat-a" style="color:red">Error analyzing request.</div>`; }
+  }
+</script>
+</body>
+</html>
