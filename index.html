@@ -10,6 +10,13 @@
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+  <script>
+    !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.async=!0,p.src=s.api_host+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r),u=e;for(var v=0;v<u._i.length;v++)g(u,u._i[v]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+    
+    // Replace 'YOUR_API_KEY' with the key from PostHog dashboard
+    posthog.init('phc_3lKj9ixj9HIIKWY7Z4BOnybw2di5x4hzqb7S8YT0uSm', {api_host: 'https://app.posthog.com'})
+</script>
+
   <style>
     :root { --color-primary: #2563eb; --color-bg: #f3f4f6; --color-surface: #ffffff; --color-text-main: #111827; --color-text-muted: #6b7280; --color-border: #e5e7eb; --color-nda: #f97316; --color-mgb: #16a34a; --color-other: #64748b; --radius-lg: 16px; --radius-md: 12px; }
     * { box-sizing: border-box; }
@@ -617,6 +624,12 @@ th.desc::after { content: '▼'; color: var(--color-primary); }
     const input = document.getElementById('chat-input');
     const question = input.value.trim();
     if(!question) return;
+
+    // Tracks the specific question user asked
+    if (window.posthog) {
+        posthog.capture('ai_question_asked', { question_text: question });
+    }
+    
     switchTab('ai_analysis');
     const container = document.getElementById('main-chat-container');
     if(container.querySelector('.empty-state')) container.innerHTML = '';
