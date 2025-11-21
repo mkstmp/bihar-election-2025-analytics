@@ -23,4 +23,5 @@ COPY . .
 EXPOSE 8000
 
 # Command to run the app using Gunicorn (Production Server)
-CMD ["gunicorn", "main:app", "--workers", "4", "--worker-class", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:8000"]
+# CHANGED: Reduced workers to 1 and increased timeout to prevent OOM & Boot loops
+CMD ["gunicorn", "main:app", "--workers", "1", "--worker-class", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:8000", "--timeout", "120"]
