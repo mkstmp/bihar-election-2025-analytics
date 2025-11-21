@@ -1,4 +1,3 @@
-# main.py
 import os
 from functools import lru_cache
 from typing import List, Dict, Any
@@ -254,5 +253,19 @@ def ask(req: AskRequest):
             raise HTTPException(400, f"Error executing SQL: {e2}")
 
     rows = df_to_clean_dict(df)
-    answer = generate_answer_text(question, sql, rows)
+
+    # --- FIX: HANDLE TRUNCATION FOR LARGE LISTS ---
+    if len(rows) > 25:
+        # If the list is long, pass only a sample to the LLM to prevent it 
+        # from attempting to write a huge, truncated list.
+        sample_rows = rows[:5]
+        answer = generate_answer_text(question, sql, sample_rows)
+        # We explicitly tell the user to look at the table for the rest
+        answer += f"\n\n**Note:** Found {len(rows)} results. I've summarized the top few above. Please refer to the data table for the full list."
+    else:
+        # For small lists, let the LLM handle it normally
+        answer = generate_answer_text(question, sql, rows)
+    # ----------------------------------------------
+
+    # We always return the FULL 'rows' to the frontend so the table renders correctly
     return AskResponse(question=question, sql=sql, answer=answer, rows=rows)

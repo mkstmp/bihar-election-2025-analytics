@@ -82,7 +82,7 @@
     .winner-dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
     .dot-green { background: #16a34a; }
 
-    /* Analytics Grid - Fixed Separator */
+    /* Analytics Grid */
     .analytics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin-top: 12px; }
     .analytics-grid > div:first-child { border-right: 1px solid var(--color-border); padding-right: 24px; }
     .analytics-grid > div:last-child { padding-left: 24px; }
@@ -104,17 +104,54 @@
     .q-chip { display: block; padding: 10px; background: #f3f4f6; border-radius: 8px; margin-bottom: 8px; font-size: 13px; color: #374151; cursor: pointer; transition: background 0.2s; }
     .q-chip:hover { background: #e5e7eb; }
 
-    /* Chat */
-    .main-chat-container { display: flex; flex-direction: column; gap: 24px; max-width: 900px; margin: 0 auto; }
+    /* Chat Interface */
+    .main-chat-container { display: flex; flex-direction: column; gap: 24px; max-width: 900px; margin: 0 auto; padding-bottom: 40px; }
     .chat-block { background: #fff; border-radius: 12px; border: 1px solid var(--color-border); overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
     .chat-q { background: #f8fafc; padding: 16px 20px; border-bottom: 1px solid #e5e7eb; font-weight: 600; color: #1e293b; display: flex; gap: 12px; align-items: center; }
     .chat-q i { color: var(--color-primary); }
     .chat-a { padding: 24px; font-size: 15px; line-height: 1.6; color: #334155; }
-    .chat-table-container { margin-top: 16px; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; }
-    .chat-table-container table th { background: #f1f5f9; }
+    
+    /* --- UPDATED: Scrolling Table for large datasets --- */
+    .chat-table-container { 
+        margin-top: 16px; 
+        border: 1px solid #e2e8f0; 
+        border-radius: 8px; 
+        overflow: hidden; 
+        max-height: 400px; /* Limits height */
+        overflow-y: auto;  /* Adds scrollbar */
+        background: #fff;
+    }
+    .chat-table-container table th { 
+        background: #f1f5f9; 
+        position: sticky; 
+        top: 0; 
+        z-index: 2; 
+    }
+    /* -------------------------------------------------- */
+
     .empty-state { text-align: center; padding: 60px 20px; color: #9ca3af; }
     .empty-state i { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
     .empty-list-msg { padding: 20px; text-align: center; font-size: 12px; color: #9ca3af; }
+
+    /* --- ADD THIS TO YOUR STYLE BLOCK --- */
+th { 
+  cursor: pointer; 
+  position: relative; 
+  user-select: none; 
+  padding-right: 20px; /* Space for arrow */
+}
+th:hover {
+  background-color: #eef2ff;
+}
+th::after { 
+  content: '⇅'; 
+  position: absolute; 
+  right: 8px; 
+  font-size: 12px; 
+  color: #cbd5e1; 
+}
+th.asc::after { content: '▲'; color: var(--color-primary); }
+th.desc::after { content: '▼'; color: var(--color-primary); }
   </style>
 </head>
 <body>
@@ -591,13 +628,84 @@
       const data = await res.json();
       document.getElementById(loadingId).remove();
       let rowsHtml = '';
+      
+      // --- FIX: Removed .slice(0,5) to show ALL rows ---
       if(data.rows && data.rows.length) {
         const headers = Object.keys(data.rows[0]);
-        rowsHtml = `<div class="chat-table-container"><table><thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${data.rows.slice(0,5).map(r=>`<tr>${headers.map(h=>`<td>${r[h]}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+        // We map over ALL rows now, because the CSS handles scrolling
+        const bodyRows = data.rows.map(r => 
+            `<tr>${headers.map(h => `<td>${r[h]}</td>`).join('')}</tr>`
+        ).join('');
+        
+        rowsHtml = `<div class="chat-table-container"><table><thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${bodyRows}</tbody></table></div>`;
       }
+      
       container.insertAdjacentHTML('afterbegin', `<div class="chat-block"><div class="chat-q"><i class="ph ph-user-circle" style="font-size:20px"></i> ${question}</div><div class="chat-a">${data.answer.replace(/\n/g, '<br>')}${rowsHtml}<div style="margin-top:12px; font-size:11px; color:#94a3b8; cursor:pointer;" onclick="this.nextElementSibling.style.display='block'">Show SQL Query</div><div style="display:none; margin-top:6px; background:#1e293b; color:#cbd5e1; padding:10px; border-radius:6px; font-family:monospace; font-size:11px;">${data.sql}</div></div></div>`);
     } catch(e) { document.getElementById(loadingId).innerHTML = `<div class="chat-a" style="color:red">Error analyzing request.</div>`; }
   }
+  // --- UNIVERSAL TABLE SORTER ---
+// --- UNIVERSAL TABLE SORTER (Fixed for "Value (Percent)" formats) ---
+document.addEventListener('click', function(e) {
+  if (e.target.tagName !== 'TH') return;
+  
+  const th = e.target;
+  const table = th.closest('table');
+  const tbody = table.querySelector('tbody');
+  if (!tbody) return;
+
+  const rows = Array.from(tbody.querySelectorAll('tr'));
+  const index = Array.from(th.parentNode.children).indexOf(th);
+  const isAsc = th.classList.contains('asc');
+  
+  // Reset other headers
+  table.querySelectorAll('th').forEach(h => h.classList.remove('asc', 'desc'));
+  
+  // Toggle sort direction
+  th.classList.toggle('asc', !isAsc);
+  th.classList.toggle('desc', isAsc);
+
+  const direction = !isAsc ? 1 : -1;
+
+  const parseVal = (str) => {
+    // 1. Remove HTML tags
+    let txt = str.replace(/<[^>]*>/g, '').trim();
+    
+    if (!txt) return -Infinity; // Empty cells go to bottom
+
+    // 2. CLEANUP: "1,234 (0.5%)" -> We only want "1234"
+    // Remove commas
+    let clean = txt.replace(/,/g, '');
+    
+    // If there is a parenthesis, take only what is BEFORE it
+    if (clean.includes('(')) {
+        clean = clean.split('(')[0].trim();
+    }
+
+    // Handle other suffixes like % or k
+    clean = clean.replace('%', '').replace('k', '000');
+
+    // 3. Convert
+    const num = parseFloat(clean);
+
+    // If it is a valid number, return it. Otherwise return lowercase text.
+    return isNaN(num) ? txt.toLowerCase() : num;
+  };
+
+  rows.sort((rowA, rowB) => {
+    const cellA = rowA.children[index].innerHTML;
+    const cellB = rowB.children[index].innerHTML;
+    
+    const valA = parseVal(cellA);
+    const valB = parseVal(cellB);
+
+    // Separate logic for Number vs String mixing
+    if (valA < valB) return -1 * direction;
+    if (valA > valB) return 1 * direction;
+    return 0;
+  });
+
+  tbody.append(...rows);
+});
 </script>
 </body>
 </html>
