@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <title>Bihar 2025 Election HQ</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -12,25 +12,64 @@
 
   <script>
     !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.async=!0,p.src=s.api_host+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r),u=e;for(var v=0;v<u._i.length;v++)g(u,u._i[v]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
-    
-    // Replace 'YOUR_API_KEY' with the key from PostHog dashboard
     posthog.init('phc_3lKj9ixj9HIIKWY7Z4BOnybw2di5x4hzqb7S8YT0uSm', {api_host: 'https://app.posthog.com'})
-</script>
+  </script>
 
   <style>
     :root { --color-primary: #2563eb; --color-bg: #f3f4f6; --color-surface: #ffffff; --color-text-main: #111827; --color-text-muted: #6b7280; --color-border: #e5e7eb; --color-nda: #f97316; --color-mgb: #16a34a; --color-other: #64748b; --radius-lg: 16px; --radius-md: 12px; }
-    * { box-sizing: border-box; }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     body { margin: 0; font-family: 'Inter', sans-serif; background-color: var(--color-bg); color: var(--color-text-main); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-    .app-container { display: grid; grid-template-columns: 1fr 400px; height: 100%; max-width: 1600px; margin: 0 auto; width: 100%; }
-    @media (max-width: 1024px) { .app-container { grid-template-columns: 1fr; overflow-y: auto; } body { overflow: auto; } }
-    header { background: var(--color-surface); border-bottom: 1px solid var(--color-border); padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; z-index: 10; }
-    .brand { display: flex; align-items: center; gap: 10px; }
-    .brand-logo { width: 32px; height: 32px; background: var(--color-primary); color: white; border-radius: 8px; display: grid; place-items: center; font-weight: 700; }
-    .brand h1 { font-size: 18px; font-weight: 600; margin: 0; }
-    .dashboard { padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 24px; background: #f9fafb; }
     
-    /* Navigation */
-    .nav-tabs { display: flex; gap: 24px; border-bottom: 1px solid var(--color-border); margin-bottom: 10px; padding-bottom: 0; }
+    /* --- LAYOUT --- */
+    .app-container { display: grid; grid-template-columns: 1fr 400px; height: 100%; max-width: 1600px; margin: 0 auto; width: 100%; }
+    
+    header { background: var(--color-surface); border-bottom: 1px solid var(--color-border); padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; z-index: 20; position: sticky; top: 0; }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .brand-logo { width: 32px; height: 32px; background: var(--color-primary); color: white; border-radius: 8px; display: grid; place-items: center; font-weight: 700; flex-shrink: 0; }
+    .brand h1 { font-size: 18px; font-weight: 600; margin: 0; white-space: nowrap; }
+    .dashboard { padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 24px; background: #f9fafb; flex: 1; }
+    
+    /* --- MOBILE & DRAWER STYLES --- */
+    .mobile-menu-btn { display: none; background: none; border: none; font-size: 24px; color: var(--color-text-main); cursor: pointer; padding: 4px; }
+    
+    .mobile-drawer-overlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.5); z-index: 998;
+        opacity: 0; pointer-events: none; transition: opacity 0.3s;
+    }
+    .mobile-drawer-overlay.open { opacity: 1; pointer-events: auto; }
+
+    .mobile-drawer {
+        position: fixed; top: 0; right: -280px; width: 280px; height: 100%;
+        background: #fff; z-index: 999;
+        box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+        display: flex; flex-direction: column;
+    }
+    .mobile-drawer.open { transform: translateX(-280px); }
+
+    .drawer-header { padding: 20px; border-bottom: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center; font-weight: 600; }
+    .drawer-close { background: none; border: none; font-size: 20px; cursor: pointer; color: #666; }
+    .drawer-nav { padding: 10px 0; overflow-y: auto; flex: 1; }
+    
+    .drawer-item { display: flex; align-items: center; gap: 12px; padding: 14px 20px; color: var(--color-text-main); text-decoration: none; font-size: 15px; font-weight: 500; border-bottom: 1px solid #f3f4f6; cursor: pointer; }
+    .drawer-item:hover { background: #f9fafb; color: var(--color-primary); }
+    .drawer-item i { color: var(--color-text-muted); font-size: 18px; }
+    .drawer-item.active { color: var(--color-primary); background: #eff6ff; border-right: 3px solid var(--color-primary); }
+    .drawer-item.active i { color: var(--color-primary); }
+
+    /* Mobile Layout Overrides */
+    @media (max-width: 1024px) { 
+      .app-container { grid-template-columns: 1fr; overflow-y: auto; display: block; } 
+      body { overflow: auto; height: auto; }
+      .dashboard { overflow: visible; height: auto; padding: 16px; }
+      .ai-panel { height: auto; border-left: none; border-top: 1px solid var(--color-border); }
+      .nav-tabs { display: none !important; } /* HIDE TABS ON MOBILE */
+      .mobile-menu-btn { display: block !important; } /* SHOW MENU BTN */
+    }
+
+    /* --- NAVIGATION (Desktop) --- */
+    .nav-tabs { display: flex; gap: 24px; border-bottom: 1px solid var(--color-border); margin-bottom: 10px; padding-bottom: 0; flex-wrap: wrap; }
     .nav-tab { padding: 10px 0; font-size: 14px; font-weight: 500; color: var(--color-text-muted); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; }
     .nav-tab:hover { color: var(--color-text-main); }
     .nav-tab.active { color: var(--color-primary); border-bottom-color: var(--color-primary); font-weight: 600; }
@@ -38,33 +77,39 @@
     .section.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* Cards */
-    .card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: 20px; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); }
-    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-    .card-title { font-size: 15px; font-weight: 600; color: var(--color-text-main); display: flex; gap: 8px; }
-    .table-wrapper { overflow-x: auto; border: 1px solid var(--color-border); border-radius: var(--radius-md); }
-    table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    th { background: #f9fafb; text-align: left; padding: 10px 12px; font-weight: 600; color: var(--color-text-muted); border-bottom: 1px solid var(--color-border); cursor: pointer; user-select: none; }
+    /* --- CARDS & GRIDS --- */
+    .card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: 20px; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); margin-bottom: 16px; min-width: 0; }
+    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
+    .card-title { font-size: 15px; font-weight: 600; color: var(--color-text-main); display: flex; gap: 8px; align-items: center; }
+    
+    /* Tables */
+    .table-wrapper { overflow-x: auto; border: 1px solid var(--color-border); border-radius: var(--radius-md); -webkit-overflow-scrolling: touch; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 500px; }
+    th { background: #f9fafb; text-align: left; padding: 10px 12px; font-weight: 600; color: var(--color-text-muted); border-bottom: 1px solid var(--color-border); cursor: pointer; user-select: none; white-space: nowrap; position: relative; padding-right: 20px; }
     th:hover { background: #eef2ff; color: var(--color-primary); }
+    th::after { content: '⇅'; position: absolute; right: 8px; font-size: 12px; color: #cbd5e1; }
+    th.asc::after { content: '▲'; color: var(--color-primary); }
+    th.desc::after { content: '▼'; color: var(--color-primary); }
     td { padding: 10px 12px; border-bottom: 1px solid var(--color-border); color: var(--color-text-main); }
     tr:last-child td { border-bottom: none; }
     
-    /* Components */
+    /* --- COMPONENTS --- */
     .badge { display: inline-block; padding: 2px 8px; border-radius: 99px; font-size: 11px; font-weight: 600; }
     .badge-nda { background: #ffedd5; color: #9a3412; }
     .badge-mgb { background: #dcfce7; color: #166534; }
     .badge-oth { background: #f1f5f9; color: #475569; }
-    .bento-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
-    
-    /* Overview */
+
+    /* --- OVERVIEW SECTION --- */
     .majority-container { background: var(--color-surface); padding: 20px; border-radius: var(--radius-lg); border: 1px solid var(--color-border); }
     .majority-header { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; font-weight: 500; color: var(--color-text-muted); }
     .majority-track { height: 24px; background: #f1f5f9; border-radius: 12px; position: relative; overflow: hidden; display: flex; }
     .bar-nda { background: var(--color-nda); height: 100%; transition: width 1s ease; }
     .bar-mgb { background: var(--color-mgb); height: 100%; transition: width 1s ease; }
     .bar-oth { background: var(--color-other); height: 100%; transition: width 1s ease; }
+    
     .breakdown-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
     @media (max-width: 768px) { .breakdown-grid { grid-template-columns: 1fr; } }
+    
     .alliance-card { background: var(--color-surface); border-radius: var(--radius-lg); border: 1px solid var(--color-border); overflow: hidden; display: flex; flex-direction: column; }
     .alliance-header { padding: 12px 16px; font-weight: 600; font-size: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); }
     .alliance-list { padding: 0; margin: 0; list-style: none; max-height: 300px; overflow-y: auto; min-height: 120px; }
@@ -73,10 +118,31 @@
     .header-mgb { background: #f0fdf4; color: #166534; border-bottom-color: #dcfce7; }
     .header-oth { background: #f8fafc; color: #475569; border-bottom-color: #e2e8f0; }
 
-    /* Head to Head */
-    .h2h-controls { display: flex; gap: 12px; align-items: center; background: #fff; padding: 16px; border-radius: var(--radius-lg); border: 1px solid var(--color-border); margin-bottom: 20px; }
-    .select-box { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #ccc; font-size: 14px; }
+    /* --- ANALYTICS GRID --- */
+    .analytics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin-top: 12px; }
+    .analytics-grid > div:first-child { border-right: 1px solid var(--color-border); padding-right: 24px; }
+    .analytics-grid > div:last-child { padding-left: 24px; }
+    @media (max-width: 768px) {
+        .analytics-grid { grid-template-columns: 1fr; gap: 24px; }
+        .analytics-grid > div:first-child { border-right: none; padding-right: 0; border-bottom: 1px solid var(--color-border); padding-bottom: 24px; }
+        .analytics-grid > div:last-child { padding-left: 0; }
+        .stat-row { font-size: 14px; }
+    }
+    .stat-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #e5e7eb; font-size: 13px; }
+    .stat-val { font-weight: 600; }
+    .section-title { font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; color: var(--color-primary); margin-bottom: 8px; }
+
+    /* --- HEAD TO HEAD --- */
+    .h2h-controls { display: flex; gap: 12px; align-items: center; background: #fff; padding: 16px; border-radius: var(--radius-lg); border: 1px solid var(--color-border); margin-bottom: 20px; flex-wrap: wrap; }
+    .select-box { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #ccc; font-size: 14px; min-width: 120px; }
     .scoreboard { display: grid; grid-template-columns: 1fr 140px 1fr; gap: 0; background: #fff; border-radius: var(--radius-lg); border: 1px solid var(--color-border); overflow: hidden; margin-bottom: 24px; }
+    @media (max-width: 600px) {
+        .scoreboard { grid-template-columns: 1fr; }
+        .score-mid { border: none; border-top: 1px solid #eee; border-bottom: 1px solid #eee; padding: 10px 0; }
+        .score-panel { text-align: center !important; }
+        .score-panel.right .score-stats { align-items: center; }
+        .score-panel.right .stat-row-mini { flex-direction: row; }
+    }
     .score-panel { padding: 20px; display: flex; flex-direction: column; }
     .score-panel.left { background: #eff6ff; color: var(--color-primary); text-align: left; }
     .score-panel.right { background: #fff7ed; color: var(--color-nda); text-align: right; }
@@ -89,15 +155,7 @@
     .winner-dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
     .dot-green { background: #16a34a; }
 
-    /* Analytics Grid */
-    .analytics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin-top: 12px; }
-    .analytics-grid > div:first-child { border-right: 1px solid var(--color-border); padding-right: 24px; }
-    .analytics-grid > div:last-child { padding-left: 24px; }
-    .stat-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #e5e7eb; font-size: 13px; }
-    .stat-val { font-weight: 600; }
-    .section-title { font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; color: var(--color-primary); margin-bottom: 8px; }
-
-    /* Right Panel */
+    /* --- RIGHT PANEL (AI) --- */
     .ai-panel { background: var(--color-surface); border-left: 1px solid var(--color-border); display: flex; flex-direction: column; height: 100%; }
     .ai-header { padding: 20px; border-bottom: 1px solid var(--color-border); background: #fafafa; }
     .ai-header h2 { margin: 0; font-size: 16px; display: flex; align-items: center; gap: 8px; }
@@ -111,57 +169,37 @@
     .q-chip { display: block; padding: 10px; background: #f3f4f6; border-radius: 8px; margin-bottom: 8px; font-size: 13px; color: #374151; cursor: pointer; transition: background 0.2s; }
     .q-chip:hover { background: #e5e7eb; }
 
-    /* Chat Interface */
+    /* --- CHAT INTERFACE --- */
     .main-chat-container { display: flex; flex-direction: column; gap: 24px; max-width: 900px; margin: 0 auto; padding-bottom: 40px; }
     .chat-block { background: #fff; border-radius: 12px; border: 1px solid var(--color-border); overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
     .chat-q { background: #f8fafc; padding: 16px 20px; border-bottom: 1px solid #e5e7eb; font-weight: 600; color: #1e293b; display: flex; gap: 12px; align-items: center; }
     .chat-q i { color: var(--color-primary); }
     .chat-a { padding: 24px; font-size: 15px; line-height: 1.6; color: #334155; }
-    
-    /* --- UPDATED: Scrolling Table for large datasets --- */
-    .chat-table-container { 
-        margin-top: 16px; 
-        border: 1px solid #e2e8f0; 
-        border-radius: 8px; 
-        overflow: hidden; 
-        max-height: 400px; /* Limits height */
-        overflow-y: auto;  /* Adds scrollbar */
-        background: #fff;
-    }
-    .chat-table-container table th { 
-        background: #f1f5f9; 
-        position: sticky; 
-        top: 0; 
-        z-index: 2; 
-    }
-    /* -------------------------------------------------- */
-
+    .chat-table-container { margin-top: 16px; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; max-height: 400px; overflow-y: auto; background: #fff; }
+    .chat-table-container table th { background: #f1f5f9; position: sticky; top: 0; z-index: 2; }
     .empty-state { text-align: center; padding: 60px 20px; color: #9ca3af; }
     .empty-state i { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
     .empty-list-msg { padding: 20px; text-align: center; font-size: 12px; color: #9ca3af; }
-
-    /* --- ADD THIS TO YOUR STYLE BLOCK --- */
-th { 
-  cursor: pointer; 
-  position: relative; 
-  user-select: none; 
-  padding-right: 20px; /* Space for arrow */
-}
-th:hover {
-  background-color: #eef2ff;
-}
-th::after { 
-  content: '⇅'; 
-  position: absolute; 
-  right: 8px; 
-  font-size: 12px; 
-  color: #cbd5e1; 
-}
-th.asc::after { content: '▲'; color: var(--color-primary); }
-th.desc::after { content: '▼'; color: var(--color-primary); }
   </style>
 </head>
 <body>
+
+<div class="mobile-drawer-overlay" id="mobileOverlay" onclick="toggleMenu()"></div>
+<div class="mobile-drawer" id="mobileDrawer">
+    <div class="drawer-header">
+        <span>Menu</span>
+        <button class="drawer-close" onclick="toggleMenu()"><i class="ph ph-x"></i></button>
+    </div>
+    <div class="drawer-nav">
+        <div class="drawer-item active" onclick="mobileNav('overview')"><i class="ph ph-squares-four"></i> Overview</div>
+        <div class="drawer-item" onclick="mobileNav('nail_biters')">🔥 Nail Biters</div>
+        <div class="drawer-item" onclick="mobileNav('deep_dive')">📊 Party Deep Dive</div>
+        <div class="drawer-item" onclick="mobileNav('head2head')"><i class="ph ph-arrows-left-right"></i> Head to Head</div>
+        <div class="drawer-item" onclick="mobileNav('parties')"><i class="ph ph-users"></i> Parties</div>
+        <div class="drawer-item" onclick="mobileNav('constituencies')"><i class="ph ph-map-pin"></i> Constituencies</div>
+        <div class="drawer-item" onclick="mobileNav('ai_analysis')"><i class="ph ph-sparkle"></i> AI Analysis</div>
+    </div>
+</div>
 
 <div class="app-container">
   
@@ -171,10 +209,16 @@ th.desc::after { content: '▼'; color: var(--color-primary); }
         <div class="brand-logo">BH</div>
         <div><h1>Bihar Election 2025</h1><div style="font-size: 12px; color: var(--color-text-muted);">Live Results Explorer</div></div>
       </div>
+      
+      <button class="mobile-menu-btn" onclick="toggleMenu()">
+        <i class="ph ph-list"></i>
+      </button>
     </header>
 
     <div class="nav-tabs">
       <div class="nav-tab active" onclick="switchTab('overview')">Overview</div>
+      <div class="nav-tab" onclick="switchTab('nail_biters')">Nail Biters</div>
+      <div class="nav-tab" onclick="switchTab('deep_dive')">Deep Dive</div>
       <div class="nav-tab" onclick="switchTab('head2head')">Head to Head</div>
       <div class="nav-tab" onclick="switchTab('parties')">Parties</div>
       <div class="nav-tab" onclick="switchTab('constituencies')">Constituencies</div>
@@ -200,12 +244,16 @@ th.desc::after { content: '▼'; color: var(--color-primary); }
         <div class="alliance-card"><div class="alliance-header header-mgb"><span>MGB</span><span id="total-mgb-seats">0</span></div><ul class="alliance-list" id="list-mgb"></ul></div>
         <div class="alliance-card"><div class="alliance-header header-oth"><span>Others</span><span id="total-oth-seats">0</span></div><ul class="alliance-list" id="list-oth"></ul></div>
       </div>
+    </div>
 
-      <div class="analytics-grid" style="margin-top: 24px;">
+    <div id="nail_biters" class="section">
         <div class="card">
           <div class="card-header"><div class="card-title"><i class="ph ph-fire"></i> Nail Biters (< 2%)</div></div>
           <div class="table-wrapper"><table id="table-nailbiters"><thead><tr><th>AC</th><th>Winner</th><th>Runner Up</th><th>Margin</th></tr></thead><tbody></tbody></table></div>
         </div>
+    </div>
+
+    <div id="deep_dive" class="section">
         <div class="card">
           <div class="card-header"><div class="card-title"><i class="ph ph-chart-bar"></i> Party Deep Dive</div><select id="analytics-party-select" onchange="loadPartyAnalytics(this.value, true)" style="padding: 4px 8px; border-radius: 6px; border: 1px solid #ccc;"></select></div>
           <div class="analytics-grid" style="margin-top:0; gap:0;">
@@ -228,7 +276,6 @@ th.desc::after { content: '▼'; color: var(--color-primary); }
             </div>
           </div>
         </div>
-      </div>
     </div>
 
     <div id="head2head" class="section">
@@ -360,10 +407,24 @@ th.desc::after { content: '▼'; color: var(--color-primary); }
     } catch(e) { console.error(e); }
   });
 
+  // --- MENU LOGIC ---
+  function toggleMenu() {
+    const drawer = document.getElementById('mobileDrawer');
+    const overlay = document.getElementById('mobileOverlay');
+    drawer.classList.toggle('open');
+    overlay.classList.toggle('open');
+  }
+
+  function mobileNav(target) {
+    toggleMenu(); // Close drawer
+    switchTab(target);
+  }
+
   // --- URL & NAVIGATION ---
   function updateURL() {
     const params = new URLSearchParams();
-    params.set('tab', document.querySelector('.section.active').id);
+    const activeSec = document.querySelector('.section.active');
+    if(activeSec) params.set('tab', activeSec.id);
     if (document.getElementById('h2h-p1').value) params.set('p1', document.getElementById('h2h-p1').value);
     if (document.getElementById('h2h-p2').value) params.set('p2', document.getElementById('h2h-p2').value);
     if (document.getElementById('analytics-party-select').value) params.set('analytics', document.getElementById('analytics-party-select').value);
@@ -385,12 +446,7 @@ th.desc::after { content: '▼'; color: var(--color-primary); }
     }
 
     let p1 = params.get('p1'); let p2 = params.get('p2');
-    
-    // Default Logic
-    if(!p1 && !p2) { 
-       p1 = 'BJP'; 
-       p2 = 'RJD'; 
-    }
+    if(!p1 && !p2) { p1 = 'BJP'; p2 = 'RJD'; }
     
     if(p1) {
       const p1Sel = document.getElementById('h2h-p1');
@@ -399,13 +455,11 @@ th.desc::after { content: '▼'; color: var(--color-primary); }
       }
       p1Sel.value = p1;
       
-      // Wait for P2 dropdown
       await onH2HP1Change(false); 
       
       if(p2) {
          const p2Sel = document.getElementById('h2h-p2');
          if(p2Sel.querySelector(`option[value="${p2}"]`)) p2Sel.value = p2;
-         // Fallback: If RJD isn't in the opponents list for some reason, default to first available
          else if(p2Sel.options.length > 0) p2Sel.selectedIndex = 0;
       }
       loadHeadToHead(false);
@@ -418,8 +472,17 @@ th.desc::after { content: '▼'; color: var(--color-primary); }
   function switchTab(id, update=true) {
     document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
-    document.querySelector(`.nav-tab[onclick="switchTab('${id}')"]`).classList.add('active');
-    document.getElementById(id).classList.add('active');
+    
+    const tabBtn = document.querySelector(`.nav-tab[onclick="switchTab('${id}')"]`);
+    if(tabBtn) tabBtn.classList.add('active');
+    
+    const section = document.getElementById(id);
+    if(section) section.classList.add('active');
+    
+    document.querySelectorAll('.drawer-item').forEach(el => el.classList.remove('active'));
+    const mobileItem = document.querySelector(`.drawer-item[onclick="mobileNav('${id}')"]`);
+    if(mobileItem) mobileItem.classList.add('active');
+
     if(update) updateURL();
   }
 
@@ -434,7 +497,6 @@ th.desc::after { content: '▼'; color: var(--color-primary); }
       const res = await fetch(`${API_BASE}/analytics/relevant-parties`);
       const relevant = await res.json();
       const relOpts = relevant.map(p => `<option value="${p.party_short}">${p.party_short}</option>`).join('');
-      
       document.getElementById('analytics-party-select').innerHTML = relOpts;
       document.getElementById('h2h-p1').innerHTML = relOpts;
     } catch(e) {}
@@ -445,8 +507,6 @@ th.desc::after { content: '▼'; color: var(--color-primary); }
     document.getElementById('analytics-party-select').value = party;
     const res = await fetch(`${API_BASE}/party/analytics?party_short=${encodeURIComponent(party)}`);
     const data = await res.json();
-    
-    // Fallback to 0 if data is empty
     const d = (data && data[0]) ? data[0] : {};
     
     document.getElementById('an-pos-1').textContent = d.pos_1 || 0;
@@ -625,7 +685,6 @@ th.desc::after { content: '▼'; color: var(--color-primary); }
     const question = input.value.trim();
     if(!question) return;
 
-    // Tracks the specific question user asked
     if (window.posthog) {
         posthog.capture('ai_question_asked', { question_text: question });
     }
@@ -642,21 +701,18 @@ th.desc::after { content: '▼'; color: var(--color-primary); }
       document.getElementById(loadingId).remove();
       let rowsHtml = '';
       
-      // --- FIX: Removed .slice(0,5) to show ALL rows ---
       if(data.rows && data.rows.length) {
         const headers = Object.keys(data.rows[0]);
-        // We map over ALL rows now, because the CSS handles scrolling
         const bodyRows = data.rows.map(r => 
             `<tr>${headers.map(h => `<td>${r[h]}</td>`).join('')}</tr>`
         ).join('');
-        
         rowsHtml = `<div class="chat-table-container"><table><thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${bodyRows}</tbody></table></div>`;
       }
       
       container.insertAdjacentHTML('afterbegin', `<div class="chat-block"><div class="chat-q"><i class="ph ph-user-circle" style="font-size:20px"></i> ${question}</div><div class="chat-a">${data.answer.replace(/\n/g, '<br>')}${rowsHtml}<div style="margin-top:12px; font-size:11px; color:#94a3b8; cursor:pointer;" onclick="this.nextElementSibling.style.display='block'">Show SQL Query</div><div style="display:none; margin-top:6px; background:#1e293b; color:#cbd5e1; padding:10px; border-radius:6px; font-family:monospace; font-size:11px;">${data.sql}</div></div></div>`);
     } catch(e) { document.getElementById(loadingId).innerHTML = `<div class="chat-a" style="color:red">Error analyzing request.</div>`; }
   }
-  // --- UNIVERSAL TABLE SORTER ---
+
 // --- UNIVERSAL TABLE SORTER (Fixed for "Value (Percent)" formats) ---
 document.addEventListener('click', function(e) {
   if (e.target.tagName !== 'TH') return;
@@ -670,48 +726,28 @@ document.addEventListener('click', function(e) {
   const index = Array.from(th.parentNode.children).indexOf(th);
   const isAsc = th.classList.contains('asc');
   
-  // Reset other headers
   table.querySelectorAll('th').forEach(h => h.classList.remove('asc', 'desc'));
   
-  // Toggle sort direction
   th.classList.toggle('asc', !isAsc);
   th.classList.toggle('desc', isAsc);
 
   const direction = !isAsc ? 1 : -1;
 
   const parseVal = (str) => {
-    // 1. Remove HTML tags
     let txt = str.replace(/<[^>]*>/g, '').trim();
-    
-    if (!txt) return -Infinity; // Empty cells go to bottom
-
-    // 2. CLEANUP: "1,234 (0.5%)" -> We only want "1234"
-    // Remove commas
+    if (!txt) return -Infinity;
     let clean = txt.replace(/,/g, '');
-    
-    // If there is a parenthesis, take only what is BEFORE it
-    if (clean.includes('(')) {
-        clean = clean.split('(')[0].trim();
-    }
-
-    // Handle other suffixes like % or k
+    if (clean.includes('(')) clean = clean.split('(')[0].trim();
     clean = clean.replace('%', '').replace('k', '000');
-
-    // 3. Convert
     const num = parseFloat(clean);
-
-    // If it is a valid number, return it. Otherwise return lowercase text.
     return isNaN(num) ? txt.toLowerCase() : num;
   };
 
   rows.sort((rowA, rowB) => {
     const cellA = rowA.children[index].innerHTML;
     const cellB = rowB.children[index].innerHTML;
-    
     const valA = parseVal(cellA);
     const valB = parseVal(cellB);
-
-    // Separate logic for Number vs String mixing
     if (valA < valB) return -1 * direction;
     if (valA > valB) return 1 * direction;
     return 0;
