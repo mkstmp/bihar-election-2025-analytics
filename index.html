@@ -29,55 +29,18 @@
     .brand h1 { font-size: 18px; font-weight: 600; margin: 0; white-space: nowrap; }
     .dashboard { padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 24px; background: #f9fafb; flex: 1; }
     
-    /* --- MOBILE & DRAWER STYLES --- */
-    .mobile-menu-btn { display: none; background: none; border: none; font-size: 24px; color: var(--color-text-main); cursor: pointer; padding: 4px; }
-    
-    .mobile-drawer-overlay {
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.5); z-index: 998;
-        opacity: 0; pointer-events: none; transition: opacity 0.3s;
-    }
-    .mobile-drawer-overlay.open { opacity: 1; pointer-events: auto; }
-
-    .mobile-drawer {
-        position: fixed; top: 0; right: -280px; width: 280px; height: 100%;
-        background: #fff; z-index: 999;
-        box-shadow: -2px 0 10px rgba(0,0,0,0.1);
-        transition: transform 0.3s ease;
-        display: flex; flex-direction: column;
-    }
-    .mobile-drawer.open { transform: translateX(-280px); }
-
-    .drawer-header { padding: 20px; border-bottom: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center; font-weight: 600; }
-    .drawer-close { background: none; border: none; font-size: 20px; cursor: pointer; color: #666; }
-    .drawer-nav { padding: 10px 0; overflow-y: auto; flex: 1; }
-    
-    .drawer-item { display: flex; align-items: center; gap: 12px; padding: 14px 20px; color: var(--color-text-main); text-decoration: none; font-size: 15px; font-weight: 500; border-bottom: 1px solid #f3f4f6; cursor: pointer; }
-    .drawer-item:hover { background: #f9fafb; color: var(--color-primary); }
-    .drawer-item i { color: var(--color-text-muted); font-size: 18px; }
-    .drawer-item.active { color: var(--color-primary); background: #eff6ff; border-right: 3px solid var(--color-primary); }
-    .drawer-item.active i { color: var(--color-primary); }
-
-    /* Mobile Layout Overrides */
-    @media (max-width: 1024px) { 
-      .app-container { grid-template-columns: 1fr; overflow-y: auto; display: block; } 
-      body { overflow: auto; height: auto; }
-      .dashboard { overflow: visible; height: auto; padding: 16px; }
-      .ai-panel { height: auto; border-left: none; border-top: 1px solid var(--color-border); }
-      .nav-tabs { display: none !important; } /* HIDE TABS ON MOBILE */
-      .mobile-menu-btn { display: block !important; } /* SHOW MENU BTN */
-    }
-
-    /* --- NAVIGATION (Desktop) --- */
+    /* --- NAVIGATION --- */
     .nav-tabs { display: flex; gap: 24px; border-bottom: 1px solid var(--color-border); margin-bottom: 10px; padding-bottom: 0; flex-wrap: wrap; }
     .nav-tab { padding: 10px 0; font-size: 14px; font-weight: 500; color: var(--color-text-muted); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; }
     .nav-tab:hover { color: var(--color-text-main); }
     .nav-tab.active { color: var(--color-primary); border-bottom-color: var(--color-primary); font-weight: 600; }
+    
     .section { display: none; animation: fadeIn 0.3s ease; }
     .section.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
     /* --- CARDS & GRIDS --- */
+    .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 24px; }
     .card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: 20px; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); margin-bottom: 16px; min-width: 0; }
     .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
     .card-title { font-size: 15px; font-weight: 600; color: var(--color-text-main); display: flex; gap: 8px; align-items: center; }
@@ -108,7 +71,6 @@
     .bar-oth { background: var(--color-other); height: 100%; transition: width 1s ease; }
     
     .breakdown-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-    @media (max-width: 768px) { .breakdown-grid { grid-template-columns: 1fr; } }
     
     .alliance-card { background: var(--color-surface); border-radius: var(--radius-lg); border: 1px solid var(--color-border); overflow: hidden; display: flex; flex-direction: column; }
     .alliance-header { padding: 12px 16px; font-weight: 600; font-size: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); }
@@ -122,12 +84,6 @@
     .analytics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin-top: 12px; }
     .analytics-grid > div:first-child { border-right: 1px solid var(--color-border); padding-right: 24px; }
     .analytics-grid > div:last-child { padding-left: 24px; }
-    @media (max-width: 768px) {
-        .analytics-grid { grid-template-columns: 1fr; gap: 24px; }
-        .analytics-grid > div:first-child { border-right: none; padding-right: 0; border-bottom: 1px solid var(--color-border); padding-bottom: 24px; }
-        .analytics-grid > div:last-child { padding-left: 0; }
-        .stat-row { font-size: 14px; }
-    }
     .stat-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #e5e7eb; font-size: 13px; }
     .stat-val { font-weight: 600; }
     .section-title { font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; color: var(--color-primary); margin-bottom: 8px; }
@@ -136,13 +92,6 @@
     .h2h-controls { display: flex; gap: 12px; align-items: center; background: #fff; padding: 16px; border-radius: var(--radius-lg); border: 1px solid var(--color-border); margin-bottom: 20px; flex-wrap: wrap; }
     .select-box { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #ccc; font-size: 14px; min-width: 120px; }
     .scoreboard { display: grid; grid-template-columns: 1fr 140px 1fr; gap: 0; background: #fff; border-radius: var(--radius-lg); border: 1px solid var(--color-border); overflow: hidden; margin-bottom: 24px; }
-    @media (max-width: 600px) {
-        .scoreboard { grid-template-columns: 1fr; }
-        .score-mid { border: none; border-top: 1px solid #eee; border-bottom: 1px solid #eee; padding: 10px 0; }
-        .score-panel { text-align: center !important; }
-        .score-panel.right .score-stats { align-items: center; }
-        .score-panel.right .stat-row-mini { flex-direction: row; }
-    }
     .score-panel { padding: 20px; display: flex; flex-direction: column; }
     .score-panel.left { background: #eff6ff; color: var(--color-primary); text-align: left; }
     .score-panel.right { background: #fff7ed; color: var(--color-nda); text-align: right; }
@@ -180,6 +129,65 @@
     .empty-state { text-align: center; padding: 60px 20px; color: #9ca3af; }
     .empty-state i { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
     .empty-list-msg { padding: 20px; text-align: center; font-size: 12px; color: #9ca3af; }
+
+    /* --- MOBILE MENU & OVERRIDES (PLACED AT END TO OVERRIDE DESKTOP) --- */
+    .mobile-menu-btn { display: none; background: none; border: none; font-size: 24px; color: var(--color-text-main); cursor: pointer; padding: 4px; }
+    
+    .mobile-drawer-overlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.5); z-index: 998;
+        opacity: 0; pointer-events: none; transition: opacity 0.3s;
+    }
+    .mobile-drawer-overlay.open { opacity: 1; pointer-events: auto; }
+
+    .mobile-drawer {
+        position: fixed; top: 0; right: -280px; width: 280px; height: 100%;
+        background: #fff; z-index: 999;
+        box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+        display: flex; flex-direction: column;
+    }
+    .mobile-drawer.open { transform: translateX(-280px); }
+
+    .drawer-header { padding: 20px; border-bottom: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center; font-weight: 600; }
+    .drawer-close { background: none; border: none; font-size: 20px; cursor: pointer; color: #666; }
+    .drawer-nav { padding: 10px 0; overflow-y: auto; flex: 1; }
+    
+    .drawer-item { display: flex; align-items: center; gap: 12px; padding: 14px 20px; color: var(--color-text-main); text-decoration: none; font-size: 15px; font-weight: 500; border-bottom: 1px solid #f3f4f6; cursor: pointer; }
+    .drawer-item:hover { background: #f9fafb; color: var(--color-primary); }
+    .drawer-item i { color: var(--color-text-muted); font-size: 18px; }
+    .drawer-item.active { color: var(--color-primary); background: #eff6ff; border-right: 3px solid var(--color-primary); }
+    .drawer-item.active i { color: var(--color-primary); }
+
+    @media (max-width: 1024px) { 
+      .app-container { grid-template-columns: 1fr; overflow-y: auto; display: block; } 
+      body { overflow: auto; height: auto; }
+      .dashboard { overflow: visible; height: auto; padding: 16px; }
+      
+      /* IMPORTANT: Hide AI panel on mobile by default */
+      .ai-panel { display: none !important; height: auto; border-left: none; border-top: 1px solid var(--color-border); }
+      
+      /* Show AI panel ONLY when .show-ai class is active on container */
+      .app-container.show-ai .ai-panel { display: flex !important; }
+
+      .nav-tabs { display: none !important; } /* HIDE TABS ON MOBILE */
+      .mobile-menu-btn { display: block !important; } /* SHOW MENU BTN */
+      .breakdown-grid { grid-template-columns: 1fr; }
+      .main-grid { grid-template-columns: 1fr; }
+      
+      /* Analytics Grid Mobile */
+      .analytics-grid { grid-template-columns: 1fr; gap: 24px; }
+      .analytics-grid > div:first-child { border-right: none; padding-right: 0; border-bottom: 1px solid var(--color-border); padding-bottom: 24px; }
+      .analytics-grid > div:last-child { padding-left: 0; }
+      .stat-row { font-size: 14px; }
+
+      /* Scoreboard Mobile */
+      .scoreboard { grid-template-columns: 1fr; }
+      .score-mid { border: none; border-top: 1px solid #eee; border-bottom: 1px solid #eee; padding: 10px 0; }
+      .score-panel { text-align: center !important; }
+      .score-panel.right .score-stats { align-items: center; }
+      .score-panel.right .stat-row-mini { flex-direction: row; }
+    }
   </style>
 </head>
 <body>
@@ -470,18 +478,28 @@
   }
 
   function switchTab(id, update=true) {
+    // 1. Update Desktop Tabs
     document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
-    document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
-    
     const tabBtn = document.querySelector(`.nav-tab[onclick="switchTab('${id}')"]`);
     if(tabBtn) tabBtn.classList.add('active');
     
+    // 2. Show/Hide Sections
+    document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
     const section = document.getElementById(id);
     if(section) section.classList.add('active');
     
+    // 3. Update Mobile Menu Highlight
     document.querySelectorAll('.drawer-item').forEach(el => el.classList.remove('active'));
     const mobileItem = document.querySelector(`.drawer-item[onclick="mobileNav('${id}')"]`);
     if(mobileItem) mobileItem.classList.add('active');
+
+    // 4. Toggle AI Panel on Mobile
+    const appContainer = document.querySelector('.app-container');
+    if (id === 'ai_analysis') {
+        appContainer.classList.add('show-ai');
+    } else {
+        appContainer.classList.remove('show-ai');
+    }
 
     if(update) updateURL();
   }
